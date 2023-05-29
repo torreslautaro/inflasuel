@@ -142,7 +142,8 @@ function App() {
         </main>
         <footer className='h-fit self-center flex flex-col items-center gap-3'>
         <span className='font-semibold text-slate-700'>Los datos fueron obtenidos de la base del <a className='font-extrabold text-[#7c75a2] hover:underline' href='https://datos.gob.ar/series/api/series/?ids=145.3_INGNACUAL_DICI_M_38&chartType=column' alt="Datos oficiales del IPC">índice nacional de precios al consumidor(IPC)</a> del INDEC.</span>
-        <p className='font-semibold text-slate-700'>Desarrollado por <a className=' font-extrabold text-[#7c75a2] hover:underline' href='https://github.com/torreslautaro' alt="Ir al perfirl de Github de Lautaro Torres">Lautaro Torres</a></p>
+        <p className='font-semibold text-slate-700'>El sitio se encuentra en desarrollo...</p>
+        <p className='font-semibold text-slate-700'>By <a className=' font-extrabold text-[#7c75a2] hover:underline' href='https://github.com/torreslautaro' alt="Ir al perfirl de Github de Lautaro Torres">Lautaro Torres</a></p>
         </footer>
       </div>
     </div>
