@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+select {
+  -webkit-appearance: menulist-button;  
+  -moz-appearance:none;
+}
+select::-webkit-scrollbar{
+  background-color: red;
+}
+select::after{
+  background-color: red;
+}
