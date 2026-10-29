@@ -1,18 +1,24 @@
+import ThemeToggle from '../ThemeToggle'
+
 const Header = () => {
   return (
-    <header className='flex items-center justify-between gap-4'>
+    <header className='flex items-center justify-between gap-3'>
       <a href='/' className='flex items-center gap-2' aria-label='InflaSuel, inicio'>
-        <img className='w-14 sm:w-16' alt='' src='/icon-192.png' width='64' height='64' />
-        <span className='text-xl font-black text-brand'>InflaSuel</span>
+        <img className='size-9' alt='' src='/icon-192.png' width='36' height='36' />
+        <span className='text-lg font-bold text-accent'>InflaSuel</span>
       </a>
-      <a
-        href='https://cafecito.app/lautarotorres'
-        rel='noopener noreferrer'
-        target='_blank'
-        className='rounded-md border-b-2 border-b-gray-700 bg-brand px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-light sm:text-base'
-      >
-        Invitame un Cafecito
-      </a>
+      <div className='flex items-center gap-1'>
+        <ThemeToggle />
+        <a
+          href='https://cafecito.app/lautarotorres'
+          rel='noopener noreferrer'
+          target='_blank'
+          className='rounded-full px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-chip hover:text-ink'
+        >
+          <span className='sm:hidden'>☕ Cafecito</span>
+          <span className='hidden sm:inline'>☕ Invitame un cafecito</span>
+        </a>
+      </div>
     </header>
   )
 }

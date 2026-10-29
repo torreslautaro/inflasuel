@@ -1,15 +1,55 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand: #7c75a2;
-  --color-brand-soft: #9891c0;
-  --color-brand-light: #aeb8d6;
-  --color-cream: #fdf7f2;
+/* El modo oscuro se activa con la clase .dark en <html> (ver script en index.html) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --bg: #f7f6fb;
+  --surface: #ffffff;
+  --ink: #1f1d2b;
+  --muted: #6b6880;
+  --line: #e4e2ee;
+  --accent: #5b5391;
+  --accent-hover: #4a4379;
+  --accent-soft: #efedfb;
+  --accent-ink: #2c2660;
+  --on-accent: #ffffff;
+  --chip: #eeedf4;
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #121118;
+  --surface: #1c1a25;
+  --ink: #ecebf5;
+  --muted: #9a96b0;
+  --line: #2e2b3b;
+  --accent: #a79ff0;
+  --accent-hover: #bcb6f5;
+  --accent-soft: #252137;
+  --accent-ink: #dcd8ff;
+  --on-accent: #17151f;
+  --chip: #26232f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+  --color-chip: var(--chip);
 }
 
 @layer components {
   .field {
-    @apply w-full rounded-lg border-2 border-transparent bg-gray-200 px-3 py-2 text-gray-900 transition-colors hover:border-gray-900 hover:bg-white focus:border-gray-900 focus:bg-white focus:outline-none disabled:cursor-not-allowed disabled:opacity-60;
+    @apply w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-ink transition-colors hover:border-muted focus:border-accent focus:ring-2 focus:ring-accent/25 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60;
   }
 }
 

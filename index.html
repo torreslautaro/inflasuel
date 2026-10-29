@@ -6,7 +6,16 @@
     <title>Calculadora de sueldo por inflación INDEC | InflaSuel</title>
     <meta name="description" content="Calculá gratis cuánto debería aumentar tu sueldo según la inflación acumulada del IPC del INDEC. Elegí el período y obtené el porcentaje y el monto del aumento." />
     <link rel="canonical" href="https://inflasuel.vercel.app/" />
-    <meta name="theme-color" content="#7c75a2" />
+    <meta name="theme-color" content="#f7f6fb" />
+    <script>
+      // Aplicar el tema antes de pintar, para que no parpadee
+      try {
+        var tema = localStorage.getItem('tema')
+        var oscuro = tema ? tema === 'oscuro' : matchMedia('(prefers-color-scheme: dark)').matches
+        if (oscuro) document.documentElement.classList.add('dark')
+        document.querySelector('meta[name="theme-color"]').content = oscuro ? '#121118' : '#f7f6fb'
+      } catch (e) {}
+    </script>
 
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />

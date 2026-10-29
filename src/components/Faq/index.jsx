@@ -19,15 +19,15 @@ const PREGUNTAS = [
 
 const Faq = () => {
   return (
-    <section aria-labelledby='faq-titulo' className='flex flex-col gap-3'>
-      <h2 id='faq-titulo' className='text-2xl font-black text-gray-900'>Preguntas frecuentes</h2>
+    <section aria-labelledby='faq-titulo' className='flex flex-col gap-2'>
+      <h2 id='faq-titulo' className='text-xl font-bold'>Preguntas frecuentes</h2>
       {PREGUNTAS.map(({ pregunta, respuesta }) => (
-        <details key={pregunta} className='group rounded-lg border border-gray-200 bg-white px-4 py-3 open:shadow-sm'>
-          <summary className='flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-gray-800 [&::-webkit-details-marker]:hidden'>
+        <details key={pregunta} className='group rounded-2xl border border-line bg-surface px-5 py-4'>
+          <summary className='flex cursor-pointer list-none items-center justify-between gap-4 font-medium [&::-webkit-details-marker]:hidden'>
             <h3>{pregunta}</h3>
-            <span className='text-xl leading-none text-brand transition-transform group-open:rotate-45' aria-hidden='true'>+</span>
+            <span className='text-xl leading-none text-accent transition-transform group-open:rotate-45' aria-hidden='true'>+</span>
           </summary>
-          <p className='mt-2 text-gray-700'>{respuesta}</p>
+          <p className='mt-2 text-muted'>{respuesta}</p>
         </details>
       ))}
     </section>

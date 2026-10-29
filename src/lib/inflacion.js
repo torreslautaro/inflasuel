@@ -1,7 +1,7 @@
 // Funciones puras: no dependen de React ni de la red, así se pueden testear.
 
 const MESES = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric', timeZone: 'UTC' })
-const PESOS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' })
+const PESOS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 })
 const PORCENTAJE = new Intl.NumberFormat('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 // La API devuelve [["2016-12-01", 100], ...]; lo pasamos a [{ periodo: "2016-12", valor: 100 }]
@@ -32,21 +32,34 @@ export const parsearCSVIndec = (texto) => {
 
 // Inflación acumulada desde el inicio de `desde` hasta el final de `hasta` (ambos inclusive).
 // Por eso la base es el índice del mes anterior a `desde`.
-export const calcularAumento = (serie, desde, hasta, sueldo) => {
+export const calcularInflacion = (serie, desde, hasta) => {
   const iDesde = serie.findIndex(d => d.periodo === desde)
   const iHasta = serie.findIndex(d => d.periodo === hasta)
 
   if (iDesde < 1) throw new Error('Elegí un mes "desde" válido')
   if (iHasta < 0) throw new Error('Elegí un mes "hasta" válido')
   if (iHasta < iDesde) throw new Error('El mes "hasta" no puede ser anterior al mes "desde"')
+
+  const meses = serie.slice(iDesde, iHasta + 1).map((d, i) => ({
+    periodo: d.periodo,
+    variacion: (d.valor / serie[iDesde + i - 1].valor - 1) * 100
+  }))
+
+  return { inflacion: (serie[iHasta].valor / serie[iDesde - 1].valor - 1) * 100, meses }
+}
+
+export const calcularAumento = (serie, desde, hasta, sueldo) => {
   if (!(sueldo > 0)) throw new Error('Ingresá un sueldo mayor a cero')
-
-  const base = serie[iDesde - 1].valor
-  const inflacion = (serie[iHasta].valor / base - 1) * 100
+  const { inflacion } = calcularInflacion(serie, desde, hasta)
   const aumento = sueldo * inflacion / 100
-
   return { inflacion, aumento, sueldoTotal: sueldo + aumento }
 }
+
+// "1.000.000" o "$ 1000000" -> 1000000 (solo pesos enteros)
+export const parsearSueldo = (texto) => Number(String(texto).replace(/\D/g, '')) || 0
+
+const MILES = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 })
+export const formatearMiles = (n) => (n > 0 ? MILES.format(n) : '')
 
 export const formatearMes = (periodo) => {
   const texto = MESES.format(new Date(`${periodo}-01T00:00:00Z`))
@@ -55,3 +68,8 @@ export const formatearMes = (periodo) => {
 
 export const formatearPesos = (n) => PESOS.format(n)
 export const formatearPorcentaje = (n) => `${PORCENTAJE.format(n)}%`
+
+export const MESES_CORTOS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+
+// "2026-09" -> "Sep 2026"
+export const formatearMesCorto = (periodo) => `${MESES_CORTOS[Number(periodo.slice(5, 7)) - 1]} ${periodo.slice(0, 4)}`

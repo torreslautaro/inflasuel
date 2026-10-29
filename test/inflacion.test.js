@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parsearSerie, parsearCSVIndec, calcularAumento, formatearMes } from '../src/lib/inflacion.js'
+import { parsearSerie, parsearCSVIndec, calcularInflacion, calcularAumento, parsearSueldo, formatearMes, formatearMesCorto } from '../src/lib/inflacion.js'
 
 const serie = parsearSerie({
   data: [
@@ -53,4 +53,19 @@ test('parsearCSVIndec toma solo el nivel general nacional', () => {
     { periodo: '2017-01', valor: 101.5859 }
   ])
   assert.throws(() => parsearCSVIndec('basura'))
+})
+
+test('calcularInflacion devuelve la variación de cada mes', () => {
+  const r = calcularInflacion(serie, '2017-01', '2017-02')
+  assert.deepEqual(r.meses.map(m => m.periodo), ['2017-01', '2017-02'])
+  assert.ok(r.meses.every(m => Math.abs(m.variacion - 10) < 1e-9))
+})
+
+test('parsearSueldo ignora puntos y símbolos', () => {
+  assert.equal(parsearSueldo('$ 1.000.000'), 1000000)
+  assert.equal(parsearSueldo(''), 0)
+})
+
+test('formatearMesCorto', () => {
+  assert.equal(formatearMesCorto('2026-09'), 'Sep 2026')
 })
