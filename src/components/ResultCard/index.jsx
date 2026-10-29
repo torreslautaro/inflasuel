@@ -1,13 +1,15 @@
-import { formatearMesCorto, formatearPesos, formatearPorcentaje } from '../../lib/inflacion'
+import { formatearPesos, formatearPorcentaje, formatearRango } from '../../lib/inflacion'
 
 const SITIO = 'https://inflasuel.vercel.app'
 
+// El link lleva el período, así quien lo abre ve los mismos meses.
+// La URL va dentro del texto: varias apps descartan el texto si se pasa `url` aparte.
 const compartir = async (texto) => {
   if (navigator.share) {
-    try { await navigator.share({ text: texto, url: SITIO }) } catch {}
+    try { await navigator.share({ text: texto }) } catch {}
     return
   }
-  window.open(`https://wa.me/?text=${encodeURIComponent(`${texto} ${SITIO}`)}`, '_blank', 'noopener')
+  window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank', 'noopener')
 }
 
 const ResultCard = ({ estado, calculo, sueldo, desde, hasta, onReintentar }) => {
@@ -34,8 +36,8 @@ const ResultCard = ({ estado, calculo, sueldo, desde, hasta, onReintentar }) => 
 
   const { inflacion } = calculo
   const aumento = sueldo * inflacion / 100
-  const periodo = desde === hasta ? formatearMesCorto(desde) : `${formatearMesCorto(desde)} a ${formatearMesCorto(hasta)}`
-  const textoCompartir = `La inflación de ${periodo} fue ${formatearPorcentaje(inflacion)} según el INDEC. Calculá cuánto debería aumentar tu sueldo:`
+  const link = `${SITIO}/?desde=${desde}&hasta=${hasta}`
+  const textoCompartir = `📈 La inflación de ${formatearRango(desde, hasta)} fue de ${formatearPorcentaje(inflacion)}, según el INDEC.\n\nCalculá cuánto debería aumentar tu sueldo 👉 ${link}`
 
   return (
     <div className='rounded-3xl bg-accent-soft p-6 text-accent-ink' aria-live='polite'>

@@ -73,3 +73,14 @@ export const MESES_CORTOS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'A
 
 // "2026-09" -> "Sep 2026"
 export const formatearMesCorto = (periodo) => `${MESES_CORTOS[Number(periodo.slice(5, 7)) - 1]} ${periodo.slice(0, 4)}`
+
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+const mesLargo = (periodo) => MESES_LARGOS[Number(periodo.slice(5, 7)) - 1]
+
+// Para textos: "junio a septiembre de 2026", "diciembre de 2025 a marzo de 2026" o "septiembre de 2026"
+export const formatearRango = (desde, hasta) => {
+  const [anioDesde, anioHasta] = [desde.slice(0, 4), hasta.slice(0, 4)]
+  if (desde === hasta) return `${mesLargo(hasta)} de ${anioHasta}`
+  if (anioDesde === anioHasta) return `${mesLargo(desde)} a ${mesLargo(hasta)} de ${anioHasta}`
+  return `${mesLargo(desde)} de ${anioDesde} a ${mesLargo(hasta)} de ${anioHasta}`
+}

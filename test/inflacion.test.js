@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parsearSerie, parsearCSVIndec, calcularInflacion, calcularAumento, parsearSueldo, formatearMes, formatearMesCorto } from '../src/lib/inflacion.js'
+import { parsearSerie, parsearCSVIndec, calcularInflacion, calcularAumento, formatearRango, parsearSueldo, formatearMes, formatearMesCorto } from '../src/lib/inflacion.js'
 
 const serie = parsearSerie({
   data: [
@@ -68,4 +68,10 @@ test('parsearSueldo ignora puntos y símbolos', () => {
 
 test('formatearMesCorto', () => {
   assert.equal(formatearMesCorto('2026-09'), 'Sep 2026')
+})
+
+test('formatearRango arma el período en texto', () => {
+  assert.equal(formatearRango('2026-06', '2026-09'), 'junio a septiembre de 2026')
+  assert.equal(formatearRango('2025-12', '2026-03'), 'diciembre de 2025 a marzo de 2026')
+  assert.equal(formatearRango('2026-09', '2026-09'), 'septiembre de 2026')
 })

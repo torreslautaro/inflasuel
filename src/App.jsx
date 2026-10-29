@@ -20,6 +20,14 @@ const rangoDePreset = (serie, modo) => {
   return [serie[Math.max(1, ultimo - Number(modo) + 1)].periodo, hasta]
 }
 
+// Período que viene en un link compartido (?desde=2026-06&hasta=2026-09), si es válido
+const rangoDeLink = (serie) => {
+  const params = new URLSearchParams(window.location.search)
+  const [desde, hasta] = [params.get('desde'), params.get('hasta')]
+  const validos = new Set(serie.slice(1).map(d => d.periodo))
+  return validos.has(desde) && validos.has(hasta) && desde <= hasta ? [desde, hasta] : null
+}
+
 function App() {
   const [serie, setSerie] = useState([])
   const [estado, setEstado] = useState('cargando') // 'cargando' | 'listo' | 'error'
@@ -36,7 +44,7 @@ function App() {
       .then(datos => {
         setSerie(datos)
         // Por defecto se eligen los meses a mano, arrancando por los últimos 3 publicados
-        const [d, h] = rangoDePreset(datos, '3')
+        const [d, h] = rangoDeLink(datos) ?? rangoDePreset(datos, '3')
         setModo('elegir')
         setDesde(d)
         setHasta(h)
