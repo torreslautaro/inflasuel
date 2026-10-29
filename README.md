@@ -26,7 +26,7 @@ Requiere Node 22.12 o superior.
 npm install
 npm run dev      # servidor local
 npm test         # tests del cálculo
-npm run build    # build de producción en dist/
+npm run build    # build de producción en dist/ (con HTML prerenderizado)
 ```
 
 ## Stack
@@ -37,4 +37,5 @@ React 19, Vite 8 y Tailwind CSS 4. Sin backend propio: solo un proxy de Vercel h
 
 - `src/lib/inflacion.js`: cálculo y formateo (funciones puras, con tests en `test/`)
 - `src/services/getSerieIPC.js`: pide la serie del IPC (INDEC, con respaldo en datos.gob.ar)
-- `src/components/`: Header, selector de mes (año + grilla de meses) y resultado
+- `src/entry-server.jsx` + `scripts/prerender.js`: en el build renderizan la app a HTML, para que buscadores y previews de redes vean el contenido sin JavaScript
+- `src/components/`: Header, selector de mes (año + grilla de meses), resultado y preguntas frecuentes

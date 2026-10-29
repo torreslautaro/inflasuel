@@ -2,7 +2,7 @@ const Header = () => {
   return (
     <header className='flex items-center justify-between gap-4'>
       <a href='/' className='flex items-center gap-2' aria-label='InflaSuel, inicio'>
-        <img className='w-14 sm:w-16' alt='' src='/logo.png' width='64' height='64' />
+        <img className='w-14 sm:w-16' alt='' src='/icon-192.png' width='64' height='64' />
         <span className='text-xl font-black text-brand'>InflaSuel</span>
       </a>
       <a

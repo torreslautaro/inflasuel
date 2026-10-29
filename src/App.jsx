@@ -4,6 +4,7 @@ import { calcularAumento, formatearMes } from './lib/inflacion'
 import Header from './components/Header'
 import MonthPicker from './components/MonthPicker'
 import Result from './components/Result'
+import Faq from './components/Faq'
 
 function App() {
   const [serie, setSerie] = useState([])
@@ -21,10 +22,10 @@ function App() {
     getSerieIPC({ signal: controller.signal })
       .then(datos => {
         setSerie(datos)
-        // Por defecto: los últimos 12 meses publicados
+        // Por defecto: los últimos 3 meses publicados (ej: julio a septiembre)
         const ultimo = datos.length - 1
         setHasta(datos[ultimo].periodo)
-        setDesde(datos[Math.max(1, ultimo - 11)].periodo)
+        setDesde(datos[Math.max(1, ultimo - 2)].periodo)
         setEstado('listo')
       })
       .catch(err => {
@@ -83,7 +84,7 @@ function App() {
               ¡Calculá el aumento de tu sueldo!
             </h1>
             <p className='mt-4 text-lg font-semibold text-gray-700'>
-              Con InflaSuel calculás cuánto debería aumentar tu sueldo según la inflación acumulada en el período que elijas.
+              Calculadora gratuita: elegí el período y te decimos cuánto debería aumentar tu sueldo según la inflación oficial del INDEC.
             </p>
           </section>
 
@@ -139,6 +140,8 @@ function App() {
               {resultado && <Result resultado={resultado} />}
             </div>
           </section>
+
+          <Faq />
         </main>
 
         <footer className='mt-auto flex flex-col items-center gap-2 text-center text-sm font-semibold text-slate-700'>
