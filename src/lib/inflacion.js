@@ -12,6 +12,24 @@ export const parsearSerie = (json) => {
     .map(([fecha, valor]) => ({ periodo: fecha.slice(0, 7), valor }))
 }
 
+// CSV del INDEC (serie_ipc_divisiones.csv): separado por ";", decimales con coma, período AAAAMM.
+// Nos quedamos con el nivel general nacional.
+export const parsearCSVIndec = (texto) => {
+  const serie = texto
+    .split(/\r?\n/)
+    .map(linea => linea.split(';'))
+    .filter(([codigo, , , , , , , region]) => codigo === '0' && region === 'Nacional')
+    .map(([, , , periodo, indice]) => ({
+      periodo: `${periodo.slice(0, 4)}-${periodo.slice(4, 6)}`,
+      valor: Number(indice.replace(',', '.'))
+    }))
+    .filter(d => /^\d{4}-\d{2}$/.test(d.periodo) && Number.isFinite(d.valor))
+    .sort((a, b) => a.periodo.localeCompare(b.periodo))
+
+  if (serie.length === 0) throw new Error('CSV del INDEC sin datos del nivel general nacional')
+  return serie
+}
+
 // Inflación acumulada desde el inicio de `desde` hasta el final de `hasta` (ambos inclusive).
 // Por eso la base es el índice del mes anterior a `desde`.
 export const calcularAumento = (serie, desde, hasta, sueldo) => {

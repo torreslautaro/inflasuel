@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/api/ipc", "destination": "https://www.indec.gob.ar/ftp/cuadros/economia/serie_ipc_divisiones.csv" }
+  ],
+  "headers": [
+    {
+      "source": "/api/ipc",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" }]
+    }
+  ]
+}

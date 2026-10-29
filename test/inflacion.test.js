@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { parsearSerie, calcularAumento, formatearMes } from '../src/lib/inflacion.js'
+import { parsearSerie, parsearCSVIndec, calcularAumento, formatearMes } from '../src/lib/inflacion.js'
 
 const serie = parsearSerie({
   data: [
@@ -37,4 +37,20 @@ test('valida los datos de entrada', () => {
 
 test('formatearMes muestra el mes en español', () => {
   assert.equal(formatearMes('2026-08'), 'Agosto de 2026')
+})
+
+test('parsearCSVIndec toma solo el nivel general nacional', () => {
+  const csv = [
+    'Codigo;Descripcion;Clasificador;Periodo;Indice_IPC;v_m_IPC;v_i_a_IPC;Region',
+    '0;NIVEL GENERAL;Nivel general y divisiones COICOP;201612;100;NA;NA;GBA',
+    '0;NIVEL GENERAL;Nivel general y divisiones COICOP;201701;101,5859;1,6;NA;Nacional',
+    '0;NIVEL GENERAL;Nivel general y divisiones COICOP;201612;100;NA;NA;Nacional',
+    '01;Alimentos y bebidas no alcohólicas;Nivel general y divisiones COICOP;201612;100;NA;NA;Nacional',
+    ''
+  ].join('\r\n')
+  assert.deepEqual(parsearCSVIndec(csv), [
+    { periodo: '2016-12', valor: 100 },
+    { periodo: '2017-01', valor: 101.5859 }
+  ])
+  assert.throws(() => parsearCSVIndec('basura'))
 })

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import getSerieIPC, { SERIE_URL } from './services/getSerieIPC'
+import getSerieIPC, { FUENTE_URL } from './services/getSerieIPC'
 import { calcularAumento, formatearMes } from './lib/inflacion'
 import Header from './components/Header'
 import PeriodSelect from './components/PeriodSelect'
@@ -144,7 +144,7 @@ function App() {
         <footer className='mt-auto flex flex-col items-center gap-2 text-center text-sm font-semibold text-slate-700'>
           <p>
             Datos del{' '}
-            <a className='font-extrabold text-brand hover:underline' href={SERIE_URL} target='_blank' rel='noopener noreferrer'>
+            <a className='font-extrabold text-brand hover:underline' href={FUENTE_URL} target='_blank' rel='noopener noreferrer'>
               Índice de Precios al Consumidor (IPC)
             </a>{' '}
             del INDEC. El resultado es una estimación de referencia.

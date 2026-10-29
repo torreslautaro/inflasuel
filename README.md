@@ -1,6 +1,11 @@
 # InflaSuel
 
-Calculadora que estima cuánto debería aumentar tu sueldo según la inflación acumulada entre dos meses, usando el **IPC Nivel General Nacional** del INDEC (serie [`148.3_INIVELNAL_DICI_M_26`](https://datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26) de datos.gob.ar).
+Calculadora que estima cuánto debería aumentar tu sueldo según la inflación acumulada entre dos meses, usando el **IPC Nivel General Nacional** del INDEC (base dic 2016 = 100).
+
+## De dónde salen los datos
+
+1. **INDEC** (principal): el CSV [`serie_ipc_divisiones.csv`](https://www.indec.gob.ar/ftp/cuadros/economia/serie_ipc_divisiones.csv), que se actualiza el día que se publica el IPC. Como no permite CORS, se pide a través de `/api/ipc`, que es un proxy definido en `vercel.json` (producción) y en `vite.config.js` (local).
+2. **datos.gob.ar** (respaldo): la serie [`148.3_INIVELNAL_DICI_M_26`](https://datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26), que replica el mismo índice con unas semanas de atraso.
 
 ## Cómo calcula
 
@@ -26,10 +31,10 @@ npm run build    # build de producción en dist/
 
 ## Stack
 
-React 19, Vite 8 y Tailwind CSS 4. Sin backend: los datos se piden directo a la API pública de datos.gob.ar desde el navegador.
+React 19, Vite 8 y Tailwind CSS 4. Sin backend propio: solo un proxy de Vercel hacia el CSV del INDEC.
 
 ## Estructura
 
 - `src/lib/inflacion.js`: cálculo y formateo (funciones puras, con tests en `test/`)
-- `src/services/getSerieIPC.js`: pide la serie del IPC a la API
+- `src/services/getSerieIPC.js`: pide la serie del IPC (INDEC, con respaldo en datos.gob.ar)
 - `src/components/`: Header, selector de período y resultado
