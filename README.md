@@ -15,7 +15,7 @@ Ejemplo: de enero a diciembre usa como base el IPC de diciembre del año anterio
 
 ## Desarrollo
 
-Requiere Node 20 o superior.
+Requiere Node 22.12 o superior.
 
 ```bash
 npm install
