@@ -1,9 +1,9 @@
 export const PRESETS = [
+  { id: 'elegir', label: 'Elegir' },
   { id: '3', label: '3 meses' },
   { id: '6', label: '6 meses' },
   { id: '12', label: '12 meses' },
-  { id: 'anio', label: 'Este año' },
-  { id: 'elegir', label: 'Elegir' }
+  { id: 'anio', label: 'Este año' }
 ]
 
 const PeriodChips = ({ modo, onChange, disabled }) => (

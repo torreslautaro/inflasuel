@@ -24,7 +24,7 @@ function App() {
   const [serie, setSerie] = useState([])
   const [estado, setEstado] = useState('cargando') // 'cargando' | 'listo' | 'error'
   const [intento, setIntento] = useState(0)
-  const [modo, setModo] = useState('3')
+  const [modo, setModo] = useState('elegir')
   const [desde, setDesde] = useState('')
   const [hasta, setHasta] = useState('')
   const [sueldo, setSueldo] = useState(0)
@@ -35,8 +35,9 @@ function App() {
     getSerieIPC({ signal: controller.signal })
       .then(datos => {
         setSerie(datos)
+        // Por defecto se eligen los meses a mano, arrancando por los últimos 3 publicados
         const [d, h] = rangoDePreset(datos, '3')
-        setModo('3')
+        setModo('elegir')
         setDesde(d)
         setHasta(h)
         setEstado('listo')
