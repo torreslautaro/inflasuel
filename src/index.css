@@ -12,3 +12,8 @@
     @apply w-full rounded-lg border-2 border-transparent bg-gray-200 px-3 py-2 text-gray-900 transition-colors hover:border-gray-900 hover:bg-white focus:border-gray-900 focus:bg-white focus:outline-none disabled:cursor-not-allowed disabled:opacity-60;
   }
 }
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}

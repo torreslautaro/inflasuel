@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import getSerieIPC, { FUENTE_URL } from './services/getSerieIPC'
 import { calcularAumento, formatearMes } from './lib/inflacion'
 import Header from './components/Header'
-import PeriodSelect from './components/PeriodSelect'
+import MonthPicker from './components/MonthPicker'
 import Result from './components/Result'
 
 function App() {
@@ -34,8 +34,8 @@ function App() {
   }, [intento])
 
   // El primer mes de la serie es la base, no se puede usar como "desde"
-  const periodosDesde = serie.slice(1).map(d => d.periodo).reverse()
-  const periodosHasta = serie.slice(1).filter(d => d.periodo >= desde).map(d => d.periodo).reverse()
+  const periodosDesde = serie.slice(1).map(d => d.periodo)
+  const periodosHasta = periodosDesde.filter(p => p >= desde)
   const ultimoPeriodo = serie.at(-1)?.periodo
 
   const limpiarResultado = () => {
@@ -99,8 +99,8 @@ function App() {
 
             <form className='flex flex-col gap-4' onSubmit={handleSubmit} noValidate>
               <div className='grid gap-4 sm:grid-cols-3'>
-                <PeriodSelect id='desde' label='Desde' value={desde} onChange={handleDesde} periodos={periodosDesde} disabled={deshabilitado} />
-                <PeriodSelect id='hasta' label='Hasta' value={hasta} onChange={handleHasta} periodos={periodosHasta} disabled={deshabilitado} />
+                <MonthPicker id='desde' label='Desde' value={desde} onChange={handleDesde} periodos={periodosDesde} rango={[desde, hasta]} disabled={deshabilitado} />
+                <MonthPicker id='hasta' label='Hasta' value={hasta} onChange={handleHasta} periodos={periodosHasta} rango={[desde, hasta]} disabled={deshabilitado} />
                 <div className='flex flex-col gap-1'>
                   <label htmlFor='sueldo' className='text-sm font-bold text-gray-600'>Sueldo básico ($)</label>
                   <input

@@ -37,4 +37,4 @@ React 19, Vite 8 y Tailwind CSS 4. Sin backend propio: solo un proxy de Vercel h
 
 - `src/lib/inflacion.js`: cálculo y formateo (funciones puras, con tests en `test/`)
 - `src/services/getSerieIPC.js`: pide la serie del IPC (INDEC, con respaldo en datos.gob.ar)
-- `src/components/`: Header, selector de período y resultado
+- `src/components/`: Header, selector de mes (año + grilla de meses) y resultado
