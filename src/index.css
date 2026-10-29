@@ -1,15 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@theme {
+  --color-brand: #7c75a2;
+  --color-brand-soft: #9891c0;
+  --color-brand-light: #aeb8d6;
+  --color-cream: #fdf7f2;
+}
 
-select {
-  -webkit-appearance: menulist-button;  
-  -moz-appearance:none;
-}
-select::-webkit-scrollbar{
-  background-color: red;
-}
-select::after{
-  background-color: red;
+@layer components {
+  .field {
+    @apply w-full rounded-lg border-2 border-transparent bg-gray-200 px-3 py-2 text-gray-900 transition-colors hover:border-gray-900 hover:bg-white focus:border-gray-900 focus:bg-white focus:outline-none disabled:cursor-not-allowed disabled:opacity-60;
+  }
 }

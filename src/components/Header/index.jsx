@@ -1,23 +1,18 @@
-import logo from '../../assets/Logo2.png'
-
 const Header = () => {
   return (
-    <header className='h-fit flex justify-between items-center'>
-      <div className='w-fit h-fit relative'>
-        <img className='w-20' alt='Logo InflaSuel' src={logo} />
-        <span className='absolute top-[1.23rem] left-[1.9rem] text-xs font-mono font-semibold text-[#7c75a2]'>IS%</span>
-      </div>
-      <div>
-        <a 
+    <header className='flex items-center justify-between gap-4'>
+      <a href='/' className='flex items-center gap-2' aria-label='InflaSuel, inicio'>
+        <img className='w-14 sm:w-16' alt='' src='/logo.png' width='64' height='64' />
+        <span className='text-xl font-black text-brand'>InflaSuel</span>
+      </a>
+      <a
         href='https://cafecito.app/lautarotorres'
-        rel='noopener' 
+        rel='noopener noreferrer'
         target='_blank'
-        alt='Invitame un café en cafecito.app'
-        className='bg-[#7c75a2] px-3 py-3 rounded-md border-b-2 border-b-gray-700 text-white font-semibold transition hover:bg-[#aeb8d6]'
-        >
-          Invitame un Cafecito
-        </a>
-      </div>
+        className='rounded-md border-b-2 border-b-gray-700 bg-brand px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-light sm:text-base'
+      >
+        Invitame un Cafecito
+      </a>
     </header>
   )
 }

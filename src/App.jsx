@@ -1,149 +1,160 @@
-import './App.css'
-import { useState, useEffect,useRef } from 'react';
-import getData, { getPeriodos } from './services/getData';
-import useListenOutsideClicks from './hooks/useListenOutsideClicks';
-import Header from './components/Header';
-import Dropdown from './components/Dropdown';
-import arrowDown from './assets/arrowDown.svg'
-import DropDownItems from './components/DropdownItems';
+import { useEffect, useState } from 'react'
+import getSerieIPC, { SERIE_URL } from './services/getSerieIPC'
+import { calcularAumento, formatearMes } from './lib/inflacion'
+import Header from './components/Header'
+import PeriodSelect from './components/PeriodSelect'
+import Result from './components/Result'
 
 function App() {
-  const [periodos, setPeriodo] = useState('')
-  const [fechadesde, setFechaDeste] = useState('')
-  const [fechahasta, setFechaHasta] = useState('')
-  const [inflacion, setInflacion] = useState(null)
-  const [sueldo, setSueldo] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [openDesde, setOpenDesde] =  useState(false)
-  const [openHasta, setOpenHasta] =  useState(false)
-  const menuRefDesde = useRef(null)
-  const menuRefHasta = useRef(null)
-  const [listeningDesde, setListeningDesde] = useState(false)
-  const [listeningHasta, setListeningHasta] = useState(false)
+  const [serie, setSerie] = useState([])
+  const [estado, setEstado] = useState('cargando') // 'cargando' | 'listo' | 'error'
+  const [intento, setIntento] = useState(0)
+  const [desde, setDesde] = useState('')
+  const [hasta, setHasta] = useState('')
+  const [sueldo, setSueldo] = useState('')
+  const [resultado, setResultado] = useState(null)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    getPeriodos()
-      .then(res => {
-        setPeriodo(res)
+    const controller = new AbortController()
+    setEstado('cargando')
+    getSerieIPC({ signal: controller.signal })
+      .then(datos => {
+        setSerie(datos)
+        // Por defecto: los últimos 12 meses publicados
+        const ultimo = datos.length - 1
+        setHasta(datos[ultimo].periodo)
+        setDesde(datos[Math.max(1, ultimo - 11)].periodo)
+        setEstado('listo')
       })
-    
-  },[])
+      .catch(err => {
+        if (err.name !== 'AbortError') setEstado('error')
+      })
+    return () => controller.abort()
+  }, [intento])
 
-  useEffect(() => {
-    useListenOutsideClicks(listeningDesde, setListeningDesde, menuRefDesde, setOpenDesde)
-  })
+  // El primer mes de la serie es la base, no se puede usar como "desde"
+  const periodosDesde = serie.slice(1).map(d => d.periodo).reverse()
+  const periodosHasta = serie.slice(1).filter(d => d.periodo >= desde).map(d => d.periodo).reverse()
+  const ultimoPeriodo = serie.at(-1)?.periodo
 
-  useEffect(() => {
-    useListenOutsideClicks(listeningHasta, setListeningHasta, menuRefHasta, setOpenHasta)
-  })
-
- 
-
-  const handleOnChangeDesde = (evt) => {
-    evt.stopPropagation()
-    setFechaDeste(evt.target.textContent)
+  const limpiarResultado = () => {
+    setResultado(null)
+    setError('')
   }
 
-  const handleOnChangeHasta = (evt) => {
-    evt.stopPropagation()
-    setFechaHasta(evt.target.textContent)
+  const handleDesde = (valor) => {
+    setDesde(valor)
+    if (hasta < valor) setHasta(valor)
+    limpiarResultado()
   }
 
-  const handleOnChangeSueldo = (evt) => {
+  const handleHasta = (valor) => {
+    setHasta(valor)
+    limpiarResultado()
+  }
+
+  const handleSueldo = (evt) => {
     setSueldo(evt.target.value)
+    limpiarResultado()
   }
 
-  const handleOnSubmit = (evt) => {
+  const handleSubmit = (evt) => {
     evt.preventDefault()
-    setLoading(true)
-    getData(fechadesde, fechahasta, sueldo)
-      .then(res => {
-        setInflacion(res)
-        setLoading(false)
-      })
+    try {
+      setResultado(calcularAumento(serie, desde, hasta, Number(sueldo)))
+      setError('')
+    } catch (err) {
+      setResultado(null)
+      setError(err.message)
+    }
   }
 
+  const deshabilitado = estado !== 'listo'
 
   return (
-    <div className='w-screen h-screen bg-[#fdf7f2] flex flex-col font-sans'>
-      <div className='w-4/5 h-full self-center p-8 flex flex-col justify-between'>
+    <div className='flex min-h-dvh flex-col bg-cream font-sans text-gray-900'>
+      <div className='mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-6 sm:px-8'>
         <Header />
-        <main className='grid grid-row-2 gap-14 mb-12' >
-          <section className='flex flex-col content-center justify-center grid-cols-1'>
-            <h1 className='pt-4 mx-auto mb-8 text-4xl font-black xl:pt-6 sm:text-[4rem] lg:text-[3rem] leading-none '>
-              <span className='bg-clip-text text-transparent bg-gradient-to-r from-[#9891c0] via-[#7c75a2] to-[#9891c0]'>Calcula el aumento de tu sueldo!</span>
+
+        <main className='flex flex-col gap-8'>
+          <section className='text-center'>
+            <h1 className='bg-linear-to-r from-brand-soft via-brand to-brand-soft bg-clip-text text-4xl leading-tight font-black text-transparent sm:text-5xl'>
+              ¡Calculá el aumento de tu sueldo!
             </h1>
-            <p className='text-center'>
-              <span className='block text-lg font-bold tracking-widest text-gray-700'>Con InflaSuel vas a poder calcular el aumento de tu sueldo </span>
-              <span className='block text-lg font-bold tracking-widest text-gray-700'>en base a la inflación acumulada de un periodo demerminado.</span>
+            <p className='mt-4 text-lg font-semibold text-gray-700'>
+              Con InflaSuel calculás cuánto debería aumentar tu sueldo según la inflación acumulada en el período que elijas.
             </p>
           </section>
-          <section className=' justify-self-center grid-cols-2'>
-            <form className='flex flex-col justify-between mb-7' onSubmit={handleOnSubmit}>
-              <div className='flex justify-between mb-2 gap-4'>
-              <label className='flex flex-col mb-1 text-md font-bold text-gray-500 transition-[color .3s cubic-bezier(.25,.01,.25,1) 0s] hover:text-gray-900'>
-                  <span>Desde:</span>
-                  <Dropdown 
-                  fecha={fechadesde}
-                  menuRef={menuRefDesde}
-                  setOpen={setOpenDesde}
-                  open={openDesde}
-                  >
-                    <DropDownItems 
-                      periodos={periodos}
-                      handleOnChange={handleOnChangeDesde}
-                    />
-                  </Dropdown>
-                  
-                </label>
-                <label className='flex flex-col mb-1 text-md font-bold text-gray-500 transition-[color .3s cubic-bezier(.25,.01,.25,1) 0s] hover:text-gray-900'>
-                  <span>Hasta:</span>
-                  <Dropdown 
-                  fecha={fechahasta}
-                  menuRef={menuRefHasta}
-                  setOpen={setOpenHasta}
-                  open={openHasta}
-                  >
-                    <DropDownItems 
-                      periodos={periodos}
-                      handleOnChange={handleOnChangeHasta}
-                    />
-                  </Dropdown>
-                </label>
-                <label className='flex flex-col mb-1 text-md font-bold text-gray-500 transition-[color .3s cubic-bezier(.25,.01,.25,1) 0s] hover:text-gray-900'>
-                  <span className=''>Sueldo Básico:</span>
-                  <input type="number" className='max-w-[190px] bg-gray-300 rounded-lg text-center py-2 border-2 border-transparent transition-[border-color .3s cubic-bezier(.25,.01,.25,1) 0s, color .3s cubic-bezier(.25,.01,.25,1) 0s,background .2s cubic-bezier(.25,.01,.25,1) 0s] hover:outline-none hover:border-gray-900 hover:bg-white focus:bg-white focus:outline-none focus:border-gray-900' onChange={handleOnChangeSueldo} />
-                </label>
+
+          <section className='flex flex-col gap-6'>
+            {estado === 'error' && (
+              <div role='alert' className='flex flex-wrap items-center justify-between gap-3 rounded-lg border-2 border-red-700 bg-red-50 p-4 text-red-800'>
+                <span className='font-semibold'>No pudimos obtener los datos del INDEC. Revisá tu conexión e intentá de nuevo.</span>
+                <button type='button' onClick={() => setIntento(i => i + 1)} className='rounded-md bg-red-700 px-3 py-1 font-semibold text-white hover:bg-red-800'>
+                  Reintentar
+                </button>
               </div>
-              <button className='w-full self-center bg-[#7c75a2] text-white py-2 px-2 font-semibold text-lg border-2 rounded-md shadow-[0.1em_0.1em] shadow-gray-900 border-gray-900 transition hover:bg-[#aeb8d6]' on>
-                {loading 
-                  ? <span className='flex justify-center'><svg className="border-t-transparent w-8 h-8 border-4 border-white border-solid rounded-full animate-spin mx-3" viewBox="0 0 24 24"></svg>Calculando...</span>
-                  : <span>Calcular</span>
-                }
-              </button>
-              <p className='text-center mt-5 text-sm font-bold text-gray-700'>
-              Datos actualizados al: 
-              <span className='text-[#7c75a2] font-extrabold underline ml-1'>{periodos.length > 0 ? periodos[0].label : null}</span>
-            </p>
-            </form>
-            <div className='flex flex-col gap-2'>
-            {
-              loading ? 'Calculando...' :
-                inflacion ? 
-                <div>
-                <p className='text-md font-semibold text-slate-700'>Inflación acumulada del periodo seleccionado: <span className='font-bold text-lg text-slate-800'>{inflacion.inflacion}%</span></p> 
-                <p className='text-md font-semibold text-slate-700'>Aumento correspondiente: <span className='font-bold text-lg text-slate-800'>${inflacion.aumentoSueldo}</span></p>
-                <p className='text-md font-semibold text-slate-700' >Sueldo básico estimado: <span className='font-bold text-lg text-slate-800'>${inflacion.sueldoTotal}</span></p>
+            )}
+
+            <form className='flex flex-col gap-4' onSubmit={handleSubmit} noValidate>
+              <div className='grid gap-4 sm:grid-cols-3'>
+                <PeriodSelect id='desde' label='Desde' value={desde} onChange={handleDesde} periodos={periodosDesde} disabled={deshabilitado} />
+                <PeriodSelect id='hasta' label='Hasta' value={hasta} onChange={handleHasta} periodos={periodosHasta} disabled={deshabilitado} />
+                <div className='flex flex-col gap-1'>
+                  <label htmlFor='sueldo' className='text-sm font-bold text-gray-600'>Sueldo básico ($)</label>
+                  <input
+                    id='sueldo'
+                    type='number'
+                    inputMode='decimal'
+                    min='0'
+                    step='0.01'
+                    placeholder='Ej: 850000'
+                    value={sueldo}
+                    onChange={handleSueldo}
+                    disabled={deshabilitado}
+                    className='field'
+                  />
                 </div>
-                : ''
-            }
+              </div>
+
+              <button
+                type='submit'
+                disabled={deshabilitado}
+                className='flex w-full items-center justify-center gap-3 rounded-md border-2 border-gray-900 bg-brand px-2 py-2 text-lg font-semibold text-white shadow-[0.1em_0.1em] shadow-gray-900 transition hover:bg-brand-light disabled:cursor-wait disabled:opacity-70'
+              >
+                {estado === 'cargando' && <span className='size-5 animate-spin rounded-full border-4 border-white border-t-transparent' aria-hidden='true' />}
+                {estado === 'cargando' ? 'Cargando datos…' : 'Calcular'}
+              </button>
+
+              {ultimoPeriodo && (
+                <p className='text-center text-sm font-bold text-gray-700'>
+                  Datos actualizados a: <span className='font-extrabold text-brand'>{formatearMes(ultimoPeriodo)}</span>
+                </p>
+              )}
+            </form>
+
+            <div aria-live='polite'>
+              {error && <p className='rounded-lg bg-amber-100 p-3 text-center font-semibold text-amber-900'>{error}</p>}
+              {resultado && <Result resultado={resultado} />}
             </div>
           </section>
         </main>
-        <footer className='h-fit self-center flex flex-col items-center gap-3'>
-        <span className='font-semibold text-slate-700'>Los datos fueron obtenidos de la base del <a className='font-extrabold text-[#7c75a2] hover:underline' href='https://datos.gob.ar/series/api/series/?ids=145.3_INGNACUAL_DICI_M_38&chartType=column' alt="Datos oficiales del IPC">índice nacional de precios al consumidor(IPC)</a> del INDEC.</span>
-        <p className='font-semibold text-slate-700'>El sitio se encuentra en desarrollo...</p>
-        <p className='font-semibold text-slate-700'>By <a className=' font-extrabold text-[#7c75a2] hover:underline' href='https://github.com/torreslautaro' alt="Ir al perfirl de Github de Lautaro Torres">Lautaro Torres</a></p>
+
+        <footer className='mt-auto flex flex-col items-center gap-2 text-center text-sm font-semibold text-slate-700'>
+          <p>
+            Datos del{' '}
+            <a className='font-extrabold text-brand hover:underline' href={SERIE_URL} target='_blank' rel='noopener noreferrer'>
+              Índice de Precios al Consumidor (IPC)
+            </a>{' '}
+            del INDEC. El resultado es una estimación de referencia.
+          </p>
+          <p>
+            Hecho por{' '}
+            <a className='font-extrabold text-brand hover:underline' href='https://github.com/torreslautaro' target='_blank' rel='noopener noreferrer'>
+              Lautaro Torres
+            </a>
+          </p>
         </footer>
       </div>
     </div>
